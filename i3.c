@@ -33,6 +33,8 @@ typedef enum
 int menu();
 bool verificaAcesso();
 int calculaMedia(i3_t *conceitos);
+void simulaI3 (i3_t simulacao);
+int atualizarConceito(i3_t *conceitos);
 int cadastrarConceitos(i3_t *conceitos, char c);
 int primeiroAcesso(i3_t *conceitos);
 int lerArquivo (i3_t *conceitos);
@@ -43,9 +45,6 @@ int main()
 {
     i3_t conceitos = {0};
     int index;
-    int qtd_cadastro = 0;
-    char conceito;
-
     
     // Seta a linguagem para portugues, logo é possivel adicionar acentos aos printf
     setlocale(LC_ALL, "pt_BR.UTF-8");
@@ -85,24 +84,11 @@ int main()
             break;
             
             case SIMULAR_MEDIA:
-                printf("\nWIP\n");
+                simulaI3(conceitos);
             break;
             
             case CADASTRAR_CONCEITOS:
-                printf("Quantos conceitos você gostaria de cadastrar?: ");
-                scanf("%d", &qtd_cadastro);
-                
-                printf("a - A\nb - B\nc - C\nd - D\ne - Cancelado/Trancado\nf - FF.\n");
-                for (int i = 0; i < qtd_cadastro; i++) {
-                    printf("Qual conceito você gostaria de atualizar?: ");
-                    scanf(" %c", &conceito);
-
-                    // Se cadastrarConceito retornar 1 significa que o usuario informou um conceito inexistente, logo será necessário repetir interação
-                    if (cadastrarConceitos(&conceitos, conceito)) {
-                        i--;
-                    }
-                }
-                calculaMedia(&conceitos);
+                atualizarConceito(&conceitos);
                 criarArquivo(&conceitos);
             break;  
 
@@ -136,6 +122,43 @@ int menu()
     } while ((index < 1) || (index > 5));
 
     return index - 1;
+}
+
+void simulaI3 (i3_t simulacao)
+{
+    printf("Vamos simular como ficaria seu I3 após somas as novas notas que você terá.\n");
+
+    atualizarConceito(&simulacao);
+
+    return;
+}
+
+
+int atualizarConceito(i3_t *conceitos)
+{
+    int qtd_cadastro;
+    char conceito;
+
+    // Verifica quantos conceitos gostaria de cadastrar
+    printf("Quantos conceitos você gostaria de cadastrar?: ");
+    scanf("%d", &qtd_cadastro);
+    
+    // Mostra as opções de conceitos
+    printf("a - A\nb - B\nc - C\nd - D\ne - Cancelado/Trancado\nf - FF.\n");
+    
+    for (int i = 0; i < qtd_cadastro; i++) {
+        printf("Qual conceito você gostaria de atualizar?: ");
+        scanf(" %c", &conceito);
+
+        // Se cadastrarConceito retornar 1 significa que o usuario informou um conceito inexistente, logo será necessário repetir interação
+        if (cadastrarConceitos(conceitos, conceito)) {
+            i--;
+        }
+    }
+
+    calculaMedia(conceitos);
+
+    return 0;
 }
 
 int lerArquivo (i3_t *conceitos)
